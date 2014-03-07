@@ -1,0 +1,55 @@
+История покупок""
+
+<div class='list_view_container' style="padding-top: 60px; padding-bottom: 60px;"> 
+    <ul id='shop_list' data-role="listview" data-theme="d"> </ul>
+</div>
+
+<div id='form_header' data-role="header" class="ui-header ui-bar-a ui-header-fixed slidedown" >
+<h1 style="text-align:left; margin-left:10px; font-size: 16px"> Типовая форма  </h1>
+<a class="ui-btn-right" onclick="CloseForegroundForm()" data-icon="delete">Закрыть</a>
+</div>  
+
+
+<div id='form_footer' data-role="footer" class="ui-footer ui-bar-a ui-footer-fixed slideup form_footer_panel" >
+    <a class="ui-btn-up-a" data-role="button" data-icon="delete" onclick="back()" >Назад</a>
+</div>
+
+<script type="text/javascript">
+    
+var FORMNAME="BuyHistory";       
+    
+$(document).ready(function()
+{
+
+   /*ACTION*/
+});
+
+function back()
+{
+    if(fic.exist(CrossDataFunction,"back"+FORMNAME))
+    {
+        FORM.RunForm(fic.getValue(CrossDataFunction,"back"+FORMNAME),fic.add(CrossDataFunction,"return"+FORMNAME,""),null);
+    }
+    else
+    {
+        CloseForegroundForm();
+    }
+}
+
+
+function ReturnData(data)
+{
+    if(fic.exist(CrossDataFunction,"select"+FORMNAME))
+    {
+        FORM.RunForm(fic.getValue(CrossDataFunction,"select"+FORMNAME),fic.add(CrossDataFunction,"return"+FORMNAME,data),null);
+    }
+    else
+    {
+        CloseForegroundForm();
+        CrossReturnFunction(data);
+    }
+}
+
+</script>
+
+

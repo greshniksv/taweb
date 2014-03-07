@@ -1,0 +1,10 @@
+
+ruby '2.0.0'
+gem 'pg'
+gem 'sinatra'
+gem 'uuid'
+gem 'tiny_tds'
+gem 'mail'
+gem 'json'
+gem 'coffee-script'
+gem 'byebug'

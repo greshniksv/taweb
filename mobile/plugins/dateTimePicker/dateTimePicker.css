@@ -1,0 +1,140 @@
+#dtp_popup
+{
+    position: fixed;
+    width: 250px;
+    height: 260px;
+    background: #222;
+    border: 2px solid white;
+    border-radius: 6px;
+    z-index: 99999;
+
+}
+#dtp_header
+{
+    position: relative;
+    width: 100%;
+    height: 40px;
+    top: 0px;
+    border-bottom: 1px solid #111;
+    background: #222;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    color:white;
+    margin-top: 10px;
+    text-align: center;
+
+}
+#dtp_bottom
+{
+    background: #c1c1c1;
+    position: absolute;
+    width: 100%;
+    height: 60px;
+    bottom: 0px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+#content_dtp
+{
+    position: absolute;
+    top: 41px;
+    width: 100%;
+    height: 130px;
+    background: #222;
+    border-top: 1px solid #444;
+}
+
+.dtp_button
+{
+    width: 116px;
+    margin: 4px;
+    height: 40px;
+    border-radius: 9px;
+    border: 2px solid #777;
+    background: whitesmoke;
+
+}
+.dtp_button:active
+{
+    background: yellowgreen;
+}
+.dtp_button.cancel:active
+{
+    background: orangered;
+}
+#dtp_setup
+{
+    position: absolute;
+    top: 8px;
+}
+#dtp_cancel
+{
+    position: absolute;
+    top: 8px;
+    right: 0px;
+}
+.dtp_plus{
+    position: absolute;
+    top: 10px;
+    background: white;
+    width: 60px;
+    height: 39px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    text-align: center;
+    line-height: 40px;
+    font-size: 28pt;
+    font-weight: bolder;
+    border-bottom: 1px solid #999;
+    -moz-user-select: -moz-none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.dtp_value{
+    position: absolute;
+    top: 50px;
+    background: #f5f5f5;
+    width: 60px;
+    height: 48px;
+    text-align: center;
+    line-height: 40px;
+    font-size: 28pt;
+    font-weight: bolder;
+    border-top: 1px solid #555;
+    border-bottom: 1px solid #999;
+    -moz-user-select: -moz-none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.dtp_minus{position: absolute;
+           top: 100px;
+           background: white;
+           width: 60px; height: 40px;
+           border-bottom-left-radius: 3px;
+           border-bottom-right-radius: 3px;
+           text-align: center; line-height: 40px;
+           font-size: 28pt;
+           font-weight: bolder;
+           border-top: 1px solid #555;
+           -moz-user-select: -moz-none;
+           -o-user-select: none;
+           -khtml-user-select: none;
+           -webkit-user-select: none;
+           user-select: none;
+}
+
+#dtp_plus_day{ left: 10px;}
+#dtp_day { left: 10px; line-height: 48px;}
+#dtp_minus_day{ left: 10px;}
+
+#dtp_plus_month{ left: 80px;}
+#dtp_month { left: 80px; line-height: 48px;}
+#dtp_minus_month{ left: 80px;}
+
+#dtp_plus_year{ left: 150px; width: 90px;}
+#dtp_year{ left: 150px; width: 90px; line-height: 48px;}
+#dtp_minus_year{ left: 150px; width: 90px;}

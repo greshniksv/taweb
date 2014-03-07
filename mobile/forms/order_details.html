@@ -1,0 +1,170 @@
+Содержимое накладной""
+
+
+<div class='list_view_container' style="padding-top: 60px; padding-bottom: 60px;">
+    <ul id='order_list' data-role="listview" data-theme="d"></ul>
+    <div id='div_list_view_container_dgv2'></div>
+</div>
+
+<div id='form_headerOrderDetail' data-role="header" class="ui-header ui-bar-a ui-header-fixed slidedown">
+    <h1 style="text-align:left; margin-left:10px; font-size: 16px"> Просмотр накладных </h1>
+    <a class="ui-btn-right" onclick="CloseForegroundForm()" data-icon="delete">Закрыть</a>
+</div>
+
+<div id="dtp_ordersDate">
+
+</div>
+
+
+<div id='form_footer' data-role="footer" class="ui-footer ui-bar-a ui-footer-fixed slideup form_footer_panel">
+    <a class="ui-btn-up-a" data-role="button" data-icon="delete" onclick="back()">Назад</a>
+</div>
+
+
+<script type="text/javascript">
+
+    var product_list;
+    var orderData;
+    var FORMNAME = "OrderDetail";
+
+
+    $(document).ready(function () {
+        //   $(".list_view_container").css("height",$("#upperform_main_div").height()-100).
+        //          css("width",$("#upperform_main_div").width()-30);
+
+        //GetCustomerShoplist();
+
+        //if(CrossDataFunction.split("|").length==3)
+        // {
+        //     orderData = CrossDataFunction.split("|")[1]+"|"+CrossDataFunction.split("|")[2];
+        // }
+        setTimeout('LoadOrderDetailView()', 100);
+    });
+
+    function back() {
+        if (fic.exist(CrossDataFunction, "back" + FORMNAME)) {
+            FORM.RunForm(fic.getValue(CrossDataFunction, "back" + FORMNAME),
+                    fic.add(CrossDataFunction, "return" + FORMNAME, ""), null);
+        }
+        else {
+            CloseForegroundForm();
+            //CrossReturnFunction(data);
+        }
+
+        //FORM.RunForm("Справочник накладных","showDetails|"+orderData,null);
+        //CloseForegroundForm();
+    }
+
+
+    function ReturnData(data) {
+        if (fic.exist(CrossDataFunction, "select" + FORMNAME)) {
+            //var endDay = DatePicker.GetIntDay("dtpOrderEnd");
+            //var startDay = DatePicker.GetIntDay("dtpOrderStart");
+            //CrossDataFunction =fic.add(CrossDataFunction,"startDay"+FORMNAME,startDay);
+            //CrossDataFunction =fic.add(CrossDataFunction,"endDay"+FORMNAME,endDay);
+            FORM.RunForm(fic.getValue(CrossDataFunction, "select" + FORMNAME),
+                    fic.add(CrossDataFunction, "return" + FORMNAME, data), null);
+        }
+        else {
+            CloseForegroundForm();
+            CrossReturnFunction(data);
+        }
+
+
+        /*if(typeof CrossDataFunction != "undefined")
+         {
+         if(CrossDataFunction.length>0)
+         {
+         CloseForegroundForm();
+         CrossReturnFunction(data);
+         }
+         }
+         CloseForegroundForm();*/
+    }
+
+    function LoadOrderDetailView() {
+
+        var orderId = fic.getValue(CrossDataFunction, "returnOrders");// CrossDataFunction.split("|")[0];
+        var found = false;
+
+        if (orderId == null) {
+            alert("Error open form. Not set 'returnOrders';");
+            Loging.Add("Error open form. Not set 'returnOrders';");
+            CloseForegroundForm();
+        }
+
+        /*STOR.Get("products_rest", "", function (json) {
+            product_list = JSON.parse(json);
+        });
+
+        var orderl;
+
+        STOR.Get("orders", "", function (json) {
+            orderl = JSON.parse(json);
+        });*/
+        //alert(orderId);
+        product_list = taweb_client.GetFormData.OrderDetails(orderId);
+
+        DGV2.dataGrid({
+            wrapperId: 'div_list_view_container_dgv2',
+            jsonData: product_list.items,
+            zebraRows: "true",
+            callBack: function(item){ ReturnData(item.id);  }, //функции callback передается ячйка по которой было вызвано событие
+            columnsName:{"product_name":"Наименоване","odproductcount":"Кол-во","odfacing":"Фей"},
+            cellWidth:{"product_name":"60","odproductcount":"20","odfacing":"20"}
+        });
+
+
+        //console.log(JSON.stringify(rrr));
+
+        //alert(CrossDataFunction);
+
+
+       /* var row = "<table border='0' cellspacing='1' cellpadding='0'><tr align='center'><th width='250'> Товар </th><th width='30'> Кол-во </th><th width='30'> Ост </th></tr></table> ";
+        var orders_list = " <li data-theme=\"b\">" + row + "</li> ";
+        var selected = 0;
+
+        console.time("Select OrderDetail");
+
+
+        orderl = JSLINQ(orderl.orders.items).
+                Where(function (item) {
+                    return item._id == orderId;
+                }).
+                OrderBy(function (item) {
+                    return item._count;
+                });
+
+        //console.log(JSON.stringify(orderl));
+
+        for (var i = 0; i < orderl.items.length; i++) {
+            for (var j = 0; j < orderl.items[i].detail.length; j++) {
+                var row = "<table border='0' cellspacing='1' cellpadding='0'><tr><td width='250'> " +
+                        GetProductName(orderl.items[i].detail[j]._product) +
+                        " </td><td width='30'> " + orderl.items[i].detail[j]._count
+                        + " </td><td width='30'> " + orderl.items[i].detail[j]._rest
+                        + " </td></tr></table> ";
+                orders_list += "<li> " + row + " </li>";
+                selected++;
+            }
+        }
+
+        console.timeEnd("Select OrderDetail");
+        console.log("Selected item:" + selected);
+
+        $('#order_list').html(orders_list);
+        $("#upperform_main_div").trigger("create");
+        $('#order_list').listview('refresh');*/
+    }
+
+
+    function GetProductName(productId) {
+
+        for (var i = 0; i < product_list.rest_products.items.length; i++) {
+            if (productId == product_list.rest_products.items[i]._id) {
+                return product_list.rest_products.items[i]._name;
+            }
+        }
+    }
+
+</script>

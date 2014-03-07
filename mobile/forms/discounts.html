@@ -1,0 +1,237 @@
+Скидки""
+
+<div class='list_view_container' style="padding-top: 110px; padding-bottom: 60px;"> 
+    <ul id='product_list' data-role="listview" data-theme="d"> </ul>
+</div>
+
+<div id='form_headerDiscount' data-role="header" class="ui-header ui-bar-a ui-header-fixed slidedown" >
+<h1 style="text-align:left; margin-left:10px; font-size: 16px"> Скидки  </h1>
+<a class="ui-btn-right" onclick="CloseForegroundForm()" data-icon="delete">Закрыть</a>
+</div>  
+
+
+<div id="dtp_ordersDate" >
+    <table><tr><td>
+        <input id='dtpOrderStart' data-theme='a' type="text"  >
+    </td><td>
+        <input id='dtpOrderEnd' data-theme='a' type="text" >
+    </td><td>
+            <select id='cbx_store_list2' data-theme='a' data-mini="true" data-native-menu="false" data-placeholder="true"  onchange="ReInitListView()">
+            <option value="standard" data-placeholder="true" > Выберите склад</option>
+            <option value="0"> 111 </option>
+            </select>
+    </td></tr></table>
+</div>
+
+
+
+
+<div id='form_footer' data-role="footer" class="ui-footer ui-bar-a ui-footer-fixed slideup form_footer_panel" >
+    <a class="ui-btn-up-a" data-role="button" data-icon="delete" onclick="back()" >Назад</a>
+</div>
+
+<script type="text/javascript">
+    
+var FORMNAME="Discount";       
+    
+$(document).ready(function()
+{
+    dateTimePicker.initWorkPlace();
+    dateTimePicker.filldtp('dtpOrderStart',function(id, selectDay){CallBackDatePicker(id, selectDay);});
+    dateTimePicker.filldtp('dtpOrderEnd', function(id, selectDay){CallBackDatePicker(id, selectDay);});
+
+
+    LoadStores();
+    LoadingData();
+    
+   /*ACTION*/
+});
+
+
+function CallBackDatePicker(id, selectDay)
+{
+    //alert(selectDay);
+    if(id=="dtpOrderEnd")
+    {
+        if(dateTimePicker.GetIntDay("dtpOrderEnd")<dateTimePicker.GetIntDay("dtpOrderStart"))
+        {
+            dateTimePicker.SetIntDay("dtpOrderStart",dateTimePicker.GetIntDay("dtpOrderEnd"));
+        }
+    }
+
+    if(id=="dtpOrderStart")
+    {
+        if(dateTimePicker.GetIntDay("dtpOrderEnd")<dateTimePicker.GetIntDay("dtpOrderStart"))
+        {
+            dateTimePicker.SetIntDay("dtpOrderEnd",dateTimePicker.GetIntDay("dtpOrderStart"));
+        }
+    }
+
+    LoadingData();
+}
+
+
+
+
+
+
+function back()
+{
+    if(fic.exist(CrossDataFunction,"back"+FORMNAME))
+    {
+        FORM.RunForm(fic.getValue(CrossDataFunction,"back"+FORMNAME),fic.add(CrossDataFunction,"return"+FORMNAME,""),null);
+    }
+    else
+    {
+        CloseForegroundForm();
+    }
+}
+
+
+function ReturnData(data)
+{
+    if(fic.exist(CrossDataFunction,"select"+FORMNAME))
+    {
+        FORM.RunForm(fic.getValue(CrossDataFunction,"select"+FORMNAME),fic.add(CrossDataFunction,"return"+FORMNAME,data),null);
+    }
+    else
+    {
+        CloseForegroundForm();
+        CrossReturnFunction(data);
+    }
+}
+
+function LoadStores()
+{
+    var store_list="";
+    var defaultValue="";
+
+    var storel =taweb_client.GetTableLinq('tblstores').OrderBy(function(item){ item.sname; });
+    /*STOR.Get("stores", "", function(json)
+     {
+     storel = JSON.parse(json);
+     });*/
+
+
+    for(var i=0;i<storel.items.length;i++)
+    {
+        var name=storel.items[i].sname;
+        var id=storel.items[i].id;
+
+        if(defaultValue=="")
+        {
+            defaultValue=id;
+            store_list+="<option selected='selected' value='"+id+"'> " + name + " </option>";
+        }
+        else
+        {
+            store_list+="<option value='"+id+"'> " + name + " </option>";
+        }
+    }
+    $("#cbx_store_list2").html(store_list);
+    $("#upperform_main_div").trigger("create");
+    $('#cbx_store_list2').selectmenu("refresh", true);
+}
+
+/*
+function LoadStores()
+{
+    var store_list="";
+    var defaultValue="";
+    
+    var storel;
+    STOR.Get("stores", "", function(json)
+    { 
+        storel = JSON.parse(json);
+    });    
+    
+    
+    for(var i=0;i<storel.stores.items.length;i++)
+    {
+        var name=storel.stores.items[i]._name;
+        var id=storel.stores.items[i]._id;
+        
+        if(defaultValue=="")
+        {
+            defaultValue=id;
+            store_list+="<option selected='selected' value='"+id+"'> " + name + " </option>";
+        }
+        else
+        {
+            store_list+="<option value='"+id+"'> " + name + " </option>";
+        }
+    }
+    $("#cbx_store_list2").html(store_list);
+    $("#upperform_main_div").trigger("create");
+    $('#cbx_store_list2').selectmenu("refresh", true);
+}
+*/
+
+function LoadingData()
+{
+    var cust = fic.getValue(CrossDataFunction, "returnCustomer");
+    var orderl;
+    var storeId = $('#cbx_store_list2 option:selected').val();
+        
+    STOR.Get("orders", "", function(json)
+    { 
+        orderl = JSON.parse(json);
+    });
+    
+    console.time("Select product");
+    
+    var endDay = dateTimePicker.GetIntDay("dtpOrderEnd");
+    var startDay = dateTimePicker.GetIntDay("dtpOrderStart");
+    var row = "<table border='0' cellspacing='1' cellpadding='0'><tr align='center'><th width='40'> Дата </th><th width='170'> Товар </th><th width='30'> Кол-во </th><th width='40'> Цена </th></tr></table> ";
+    var product_list=" <li data-theme=\"b\">"+row+"</li> ";
+    
+    
+    orderl = JSLINQ(orderl.orders.items).
+            Where(function(item){ return startDay<=new Date(Date.parse(item._date)).getTime() && endDay>= new Date(Date.parse(item._date)).getTime(); });
+
+    orderl = taweb_client.GetTableLinq("tblorderdetails")
+
+    DGV2.dataGrid({
+        wrapperId: 'div_list_view_container_dgv2',
+        jsonData: orderl.items,
+        zebraRows: "true",
+        callBack: function(item){ ReturnData(item.id);  }, //функции callback передается ячйка по которой было вызвано событие
+        columnsName:{"odate":"Дата","customer_name":"Клиент","official_name":"Оф"},
+        cellWidth:{"odate":"20","customer_name":"65","official_name":"5"}
+    });
+
+
+
+    /*for(var i=0;i<orderl.items.length;i++)
+    {
+        var date=orderl.items[i]._date;
+        var shortDate = new Date(Date.parse(date)).format("dd-mm");
+        var shop=orderl.items[i]._shop;
+        var off=orderl.items[i]._off;
+        var summ=orderl.items[i]._summ;
+        var id = orderl.items[i]._id;
+        
+        for(var j=0;j<orderl.items[i].detail.length;j++)
+        {
+            var productId= orderl.items[i].detail[j]._product;
+            var count= orderl.items[i].detail[j]._count;
+            var price= orderl.items[i].detail[j]._price;
+            
+            var row = "<table border='0' cellspacing='1' cellpadding='0'><tr><td width='60'> "+shortDate+" </td><td width='150'> "+DC.GetProductName(productId)+" </td><td width='30'> "+count+" </td><td width='30'> "+(count*price)+" </td></tr></table> ";    
+            product_list+="<li> <a onclick=\"ReturnData('"+id+"')\" > "+row+" </a> </li>";  
+        }
+    }*/
+    
+    console.timeEnd("Select product");
+    console.log("Selected item:"+orderl.items.length);
+    
+    $('#product_list').html(product_list);
+    $("#upperform_main_div").trigger("create");
+    $('#product_list').listview('refresh');
+}
+
+
+
+</script>
+
+

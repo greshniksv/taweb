@@ -1,0 +1,67 @@
+.dataGridview 
+{
+    width: 100%; 
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    border-collapse: collapse; 
+    
+}
+
+.dataGridview  th { 
+    text-align: center;     
+    background: #f9f9f9; 
+    border: 1px solid #DDD;
+    line-height: 26px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #08c;
+     padding-top: 15px;
+     padding-bottom: 15px;
+
+}
+.dataGridview  th>span {color:black;} 
+.dataGridview td 
+{ 
+    padding: 5px; 
+    border: 1px solid #DDD;
+    color:white;
+    padding-top: 15px;
+    padding-bottom: 15px;
+
+}
+.dataGridview td >input
+{
+    width: 95%;
+    border-radius: 5px;
+}
+
+.dataGridview td.oddZebraRows 
+{ 
+    background-color: #666;
+    color: orangered; 
+}
+.dataGridview tr:hover
+{
+    background-color: lightblue;
+    color: #666;
+
+}
+.rotated180 {
+    -moz-transform: rotate(180deg); /* Для Firefox */
+    -ms-transform: rotate(180deg); /* Для IE */
+    -webkit-transform: rotate(180deg); /* Для Safari, Chrome, iOS */
+    -o-transform: rotate(180deg); /* Для Opera */
+    transform: rotate(1805deg);
+}
+
+.dataGridviewSortU:after
+{
+     content: "▼";
+}
+.dataGridviewSortD:after
+{
+     content: "▲";
+}
+.ss
+{
+ font-size: 18pt;   
+}

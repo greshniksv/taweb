@@ -1,0 +1,360 @@
+Справочник накладных""
+
+
+<div id='div_list_view_container' class='list_view_container' style="padding-top: 110px; padding-bottom: 60px;"> 
+    <ul id='order_list' data-role="listview" data-theme='a'> </ul>
+    <div id='div_list_view_container_dgv2'></div>
+</div>
+
+<div id='form_headerOrders' data-role="header" class="ui-header ui-bar-a ui-header-fixed slidedown" >
+<h1> Справочник накладных  </h1>
+<a class="ui-btn-right" onclick="CloseForegroundForm()" data-icon="delete">Закрыть</a>
+</div>  
+
+<div id="dtp_ordersDate" >
+
+<!--    <table><tr><td>
+    <input id='dtp_start' type="date" name="date" id="date" value="04/04/2013" /></td><td>
+    <input id='dtp_end' type="date" name="date" id="date" value="" />
+            </td></tr></table>
+-->
+    
+<table><tr><td>
+    <input id='dtpOrderStart' data-theme='a' type="text"  >
+</td><td>
+    <input id='dtpOrderEnd' data-theme='a' type="text" >
+</td><td>
+        <select id='cbx_store_list1' data-theme='a' data-mini="true" data-native-menu="false" data-placeholder="true"  onchange="ReInitListView()">
+        <option value="standard" data-placeholder="true" > Выберите склад</option>
+        <option value="0"> 111 </option>
+        </select>
+</td></tr></table>
+
+    
+</div>
+
+
+<div id='form_footer' data-role="footer" class="ui-footer ui-bar-a ui-footer-fixed slideup form_footer_panel" >
+    <a class="ui-btn-up-a" data-role="button" data-icon="delete" onclick="back()" >Назад</a>
+</div>
+
+<script type="text/javascript">
+
+//var CustomerShopList=new Array();
+var CustomerShopList = new Array();
+var FORMNAME="Orders"; 
+    
+$(document).ready(function()
+{
+  //   $(".list_view_container").css("height",$("#upperform_main_div").height()-100).
+  //          css("width",$("#upperform_main_div").width()-30);
+    LoadStores();
+    
+    //DatePicker.Add("dtpOrderStart", function(id, selectDay){CallBackDatePicker(id, selectDay);});
+    //DatePicker.Add("dtpOrderEnd", function(id, selectDay){CallBackDatePicker(id, selectDay);})
+    
+    dateTimePicker.initWorkPlace();
+    dateTimePicker.filldtp('dtpOrderStart',function(id, selectDay){CallBackDatePicker(id, selectDay);});
+    dateTimePicker.filldtp('dtpOrderEnd', function(id, selectDay){CallBackDatePicker(id, selectDay);});
+    
+    
+    //GetCustomerShoplist();
+    LoadOrdersView();
+    
+
+});
+
+function CallBackDatePicker(id, selectDay)
+{
+    //alert(selectDay);
+    if(id=="dtpOrderEnd")
+    {
+        if(dateTimePicker.GetIntDay("dtpOrderEnd")<dateTimePicker.GetIntDay("dtpOrderStart"))
+        {
+            dateTimePicker.SetIntDay("dtpOrderStart",dateTimePicker.GetIntDay("dtpOrderEnd"));
+        }
+    }
+    
+    if(id=="dtpOrderStart")
+    {
+        if(dateTimePicker.GetIntDay("dtpOrderEnd")<dateTimePicker.GetIntDay("dtpOrderStart"))
+        {
+            dateTimePicker.SetIntDay("dtpOrderEnd",dateTimePicker.GetIntDay("dtpOrderStart"));
+        }
+    }
+    
+    LoadOrdersView();
+}
+
+function ReInitListView()
+{
+    setTimeout('LoadOrdersView()', 10);
+}
+
+
+function back()
+{
+    if(fic.exist(CrossDataFunction,"back"+FORMNAME))
+    {
+        FORM.RunForm(fic.getValue(CrossDataFunction,"back"+FORMNAME),fic.add(CrossDataFunction,"return"+FORMNAME,""),null);
+    }
+    else
+    {
+        CloseForegroundForm();
+        //CrossReturnFunction(data);
+    }
+}
+
+
+function ReturnData(data)
+{
+    
+    if(fic.exist(CrossDataFunction,"select"+FORMNAME))
+    {
+        var endDay = dateTimePicker.GetIntDay("dtpOrderEnd");
+        var startDay = dateTimePicker.GetIntDay("dtpOrderStart");
+        CrossDataFunction =fic.add(CrossDataFunction,"startDay"+FORMNAME,startDay);
+        CrossDataFunction =fic.add(CrossDataFunction,"endDay"+FORMNAME,endDay);
+        FORM.RunForm(fic.getValue(CrossDataFunction,"select"+FORMNAME),fic.add(CrossDataFunction,"return"+FORMNAME,data),null);
+    }
+    else
+    {
+        CloseForegroundForm();
+        CrossReturnFunction(data);
+    }
+    
+    /*if(typeof CrossDataFunction != "undefined")
+    {
+       if(regFn.inc(CrossDataFunction,"showDetails"))
+       {
+           var endDay = DatePicker.GetIntDay("dtpOrderEnd");
+           var startDay = DatePicker.GetIntDay("dtpOrderStart");
+       
+           //CloseForegroundForm();
+           //CrossReturnFunction(data);
+           FORM.RunForm("Содержимое накладной",data+"|"+startDay+"|"+endDay,null);
+       }
+       else
+       { 
+           CloseForegroundForm();
+           CrossReturnFunction(data);
+       }
+    }*/
+    //CloseForegroundForm();
+}
+
+
+function LoadStores()
+{
+    var store_list="";
+    var defaultValue="";
+    
+    var storel =taweb_client.GetTableLinq('tblstores').OrderBy(function(item){ item.sname; });
+    /*STOR.Get("stores", "", function(json)
+    { 
+        storel = JSON.parse(json);
+    });*/
+    
+    
+    for(var i=0;i<storel.items.length;i++)
+    {
+        var name=storel.items[i].sname;
+        var id=storel.items[i].id;
+        
+        if(defaultValue=="")
+        {
+            defaultValue=id;
+            store_list+="<option selected='selected' value='"+id+"'> " + name + " </option>";
+        }
+        else
+        {
+            store_list+="<option value='"+id+"'> " + name + " </option>";
+        }
+    }
+    $("#cbx_store_list1").html(store_list);
+    $("#upperform_main_div").trigger("create");
+    $('#cbx_store_list1').selectmenu("refresh", true);
+}
+
+
+function ll()
+{
+    if(fic.getValue(CrossDataFunction,"startDay"+FORMNAME,null)!=null)
+            dateTimePicker.SetIntDay("dtpOrderStart", parseInt(fic.getValue(CrossDataFunction,"startDay"+FORMNAME)));
+        
+    if(fic.getValue(CrossDataFunction,"endDay"+FORMNAME,null)!=null)
+            dateTimePicker.SetIntDay("dtpOrderEnd",parseInt(fic.getValue(CrossDataFunction,"endDay"+FORMNAME)));
+        
+        
+    var blob = new Blob([
+    "onmessage = function(e) { "+
+    "    postMessage('msg from worker'); "+
+    "}" 
+    ]);
+
+    // Obtain a blob URL reference to our worker 'file'.
+    var blobURL = window.URL.createObjectURL(blob);
+
+    var worker = new Worker(blobURL);
+    worker.onmessage = function(e) {
+      // e.data == 'msg from worker'
+      alert(e.data);
+    };
+    worker.postMessage(); // Start the worker.
+    
+    
+}
+
+
+function LoadOrdersView()
+{
+
+
+    var orderl;
+    var storeId = $('#cbx_store_list1 option:selected').val();
+        
+    /*STOR.Get("orders", "", function(json)
+    { 
+        orderl = JSON.parse(json);
+    });*/
+    
+    //if(regFn.inc(CrossDataFunction,"showDetails") && CrossDataFunction.split("|").length==3)
+    //{
+        //orderData = CrossDataFunction.split("|")[1]+"|"+CrossDataFunction.split("|")[2];
+        
+        if(fic.getValue(CrossDataFunction,"startDay"+FORMNAME,null)!=null)
+            dateTimePicker.SetIntDay("dtpOrderStart", parseInt(fic.getValue(CrossDataFunction,"startDay"+FORMNAME)));
+        
+        if(fic.getValue(CrossDataFunction,"endDay"+FORMNAME,null)!=null)
+            dateTimePicker.SetIntDay("dtpOrderEnd",parseInt(fic.getValue(CrossDataFunction,"endDay"+FORMNAME)));
+        
+        //CrossDataFunction="showDetails";
+    //} 
+    
+    console.time("Select order");
+    
+    var endDay = dateTimePicker.GetIntDay("dtpOrderEnd");
+    var startDay = dateTimePicker.GetIntDay("dtpOrderStart");
+    var row = "<table border='0' cellspacing='1' cellpadding='0'><tr align='center'><th width='40'> Дата </th><th width='170'> Клиент </th><th width='30'> Оф </th><th width='40'> Сумм </th></tr></table> ";
+    var orders_list=" <li data-theme=\"b\">"+row+"</li> ";
+    
+
+
+    orderl = taweb_client.GetFormData.Orders(startDay,endDay,storeId);
+
+
+
+    DGV2.dataGrid({
+        wrapperId: 'div_list_view_container_dgv2',
+        jsonData: orderl.items,
+        zebraRows: "true",
+        callBack: function(item){ ReturnData(item.id);  }, //функции callback передается ячйка по которой было вызвано событие
+        columnsName:{"odate":"Дата","customer_name":"Клиент","official_name":"Оф"},
+        cellWidth:{"odate":"20","customer_name":"65","official_name":"5"}
+    });
+
+
+    
+    console.timeEnd("Select order");
+    console.log("Selected item:"+orderl.items.length);
+    //alert("Selected item:"+orderl.items.length);
+    
+    /*for(var i=0;i<orderl.items.length;i++)
+    {
+        var date=orderl.items[i]._date;
+        var shortDate = new Date(Date.parse(date)).format("dd-mm");
+        var shop=orderl.items[i]._shop;
+        var off=orderl.items[i]._off;
+        var summ=orderl.items[i]._summ;
+        var id = orderl.items[i]._id;
+        
+        var row = "<table border='0' cellspacing='1' cellpadding='0'><tr><td width='60'> "+shortDate+" </td><td width='150'> "+GetCustomerName(shop)+" </td><td width='30'> "+(off==0?"Нет":"Да")+" </td><td width='30'> "+summ+" </td></tr></table> ";    
+        orders_list+="<li> <a onclick=\"ReturnData('"+id+"')\" > "+row+" </a> </li>";                
+    }
+    
+    console.timeEnd("Select order");
+    console.log("Selected item:"+orderl.items.length);
+    
+    $('#order_list').html(orders_list);
+    $("#upperform_main_div").trigger("create");
+    $('#order_list').listview('refresh');*/
+}
+
+
+function GetCustomerName(ShopId)
+{
+    for(var i=0;i<CustomerShopList.cl.length;i++)
+    {
+        for(var j=0;j<CustomerShopList.cl[i].shops.length;j++)
+        {
+            if(CustomerShopList.cl[i].shops[j]._id==ShopId)
+            {
+                return CustomerShopList.cl[i]._cname;
+            }
+        }
+    }
+    
+    return "ERROR";
+}
+
+
+
+function GetCustomerShoplist()
+{
+    var shop;
+    var cust;
+
+    STOR.Get("shops", "", function(json)
+    { 
+        shop = JSON.parse(json);
+    });
+
+    STOR.Get("customers", "", function(json)
+    { 
+        cust = JSON.parse(json);
+    });
+
+    var out = JSON.stringify(cust);
+    //console.log(out);
+
+
+    
+    var count=0;
+
+    var textCustomerShopList="{ \"cl\":[";
+    for(var i=0;i<cust.customers.items.length;i++)
+    {
+        var counts=0;
+        var shopList="";
+        for(var j=0;j<shop.shops.items.length;j++)
+        {
+            if(shop.shops.items[j]._cust==cust.customers.items[i]._id)
+            {
+                if(counts>0)shopList+=","; counts++;
+                shopList+="{ \"_id\":\""+shop.shops.items[j]._id+"\",\"_name\":\""+shop.shops.items[j]._name.replace(/\\/g,"\\\\").replace(/"/g,"\\\"")+"\" } \n";
+            }
+        }
+
+        if(count>0)textCustomerShopList+=","; count++;
+        textCustomerShopList+="\n\n{ \"_cid\":\""+cust.customers.items[i]._id+"\", \
+                             \"_cname\":\""+cust.customers.items[i]._name.replace(/\\/g,"\\\\").replace(/"/g,"\\\"")+"\", \
+                             \"shops\": [ "+shopList+" ] \
+     }";
+    }
+    textCustomerShopList+="]}";
+    
+    //console.log(textCustomerShopList);
+    try
+    {
+        CustomerShopList = JSON.parse(textCustomerShopList);
+    }
+    catch(err)
+    {
+        console.log("Error parse - CustomerShopList. DATA:\n"+textCustomerShopList);
+    }
+}
+
+
+</script>
+
+

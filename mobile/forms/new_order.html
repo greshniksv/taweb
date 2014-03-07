@@ -1,0 +1,495 @@
+Новая накладная""
+
+<div class='list_view_container' style="padding-top: 160px; padding-bottom: 60px;">
+    <ul id='product_list_new_order' data-role="listview" data-theme="d"></ul>
+    <div id='div_list_view_container_dgv2'></div>
+</div>
+
+<div id='form_header' data-role="header" class="ui-header ui-bar-a ui-header-fixed slidedown">
+    <h1 style="text-align:left; margin-left:10px; font-size: 16px"> Новая накладная </h1>
+    <a class="ui-btn-right" onclick="CloseForegroundForm()" data-icon="delete">Закрыть</a>
+    <table id="header_panel_newOrder">
+        <tr>
+            <td colspan="2" id="customerName"></td>
+        </tr>
+        <tr>
+            <td colspan="2" id="shopName"></td>
+        </tr>
+        <tr>
+            <td id='orderDateContainer'>
+                <input id='dtpOrderDate' data-theme='a' type="text">
+            </td>
+            <td id='orderStoreListContainer'>
+                <select id='cbx_store_list' data-mini="true" data-native-menu="false" data-placeholder="true"
+                        onchange="ReInitListView()">
+                    <option value="standard" data-placeholder="true">Выберите склад</option>
+                    <option value="rush">Rush: 3 days</option>
+                    <option value="express">Express: next day</option>
+                    <option value="overnight">Overnight</option>
+                </select>
+            </td>
+
+        </tr>
+    </table>
+
+</div>
+
+
+<div id='form_footer' data-role="footer" class="ui-footer ui-bar-a ui-footer-fixed slideup form_footer_panel">
+    <a class="ui-btn-up-a" data-role="button" data-icon="delete" onclick="back()">Назад</a>
+    <a class="ui-btn-up-a" data-role="button" data-icon="plus" onclick="AddProduct()">Доб</a>
+    <a class="ui-btn-up-a" data-role="button" data-icon="minus" onclick="RemoveOrder()">Удт</a>
+    <a class="ui-btn-up-a" data-role="button" data-icon="info" onclick="ShowMenu(1)">Мню</a>
+</div>
+
+
+<div id="popup_background" style="display:none">
+
+    <div class='product_add_popup'>
+        <table id='tableAddProduct'>
+            <tr>
+                <th colspan="4"> Добавить товар</th>
+            </tr>
+            <tr>
+                <td colspan="4"><br/></td>
+            </tr>
+            <tr>
+                <td colspan="4" id="productName"> PREVED</td>
+            </tr>
+            <tr>
+                <td> По цене:</td>
+                <td colspan="2" id="price"> 0.0</td>
+            </tr>
+            <tr>
+                <td> Сумма:</td>
+                <td colspan="2" id="summ"> 0.0</td>
+            </tr>
+            <tr>
+                <td colspan="4"><br/></td>
+            </tr>
+            <tr>
+                <td><input id='count' oninput="OnChangeCount()" type="text" value='Кол-во'></td>
+                <td>
+                    <input id='rest' type="text" value='Остаток'></td>
+            </tr>
+            <tr>
+                <td><input id='faci' type="text" value='Фейс'></td>
+                <td>
+                    <input id='sprice' type="text" value='МЦена'></td>
+            </tr>
+            <tr>
+                <td colspan="4"><a id='btnCancel' onclick="EditProduct()" data-role="button">Отменить</a>
+                    <a id='btnAddProduct' data-role="button">Принять</a> <hr/> <a id='btnDelProduct' data-role="button">Удалить</a></td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+
+
+<div id="popup_menu_background" style="display:none" onclick="">
+
+    <div class='popup_menu_list' onclick="">
+
+        <ul id='menu_list' data-role="listview" data-mini="true" data-theme="d">
+            <!--<li><a onclick="showDiscount()"> Скидки </a></li> -->
+            <!--<li><a onclick="showBuyHistory()"> История покупок </a></li> -->
+            <li>
+                <table width='100%'>
+                    <tr>
+                    <!--<td><input type="checkbox" id="chkKo" class="custom"/> <label for="chkKo">КО</label></td>-->
+                    <td><input type="checkbox" id="chkOff" class="custom"/> <label for="chkOff">Оф</label></td>
+                </tr>
+            </table>
+        </li>
+
+        <li><textarea id="txbComment"> </textarea></li>
+        <li><a onclick="SaveSubMenuData()"> Выйти </a></li>
+    </ul>
+
+</div>
+</div>
+
+
+<script type="text/javascript">
+
+var FORMNAME = "NewOrder";
+var products = null;
+var _ORDER = null;
+
+$(document).ready(function ()
+{
+LoadOrderFromSTOR();
+//DatePicker.Add("dtpOrderDate", function(id, selectDay) { /*no nothing*/ });
+dateTimePicker.initWorkPlace();
+dateTimePicker.filldtp('dtpOrderDate', function (id, selectDay) {
+    var date = $("#dtpOrderDate").val();
+    _ORDER.order.odate = date;
+    var out = JSON.stringify(_ORDER);
+    console.log(out);
+    STOR.Set("newOrder", JSON.stringify(_ORDER));
+});
+
+var date = $("#dtpOrderDate").val();
+_ORDER.order.odate = date;
+
+//$("#customerName").html(DC.GetCustomerName(DC.GetCustomerFormShop()));
+//$("#shopName").html(DC.GetShopName(_ORDER.info._shop));
+
+$("#customerName").html(taweb_client.GetData.CustomerNameByShopId(_ORDER.order.oshopid));
+$("#shopName").html(taweb_client.GetData.ShopName(_ORDER.order.oshopid));
+
+LoadStoreList();
+
+/*ACTION*/
+});
+
+function LoadOrderFromSTOR()
+{
+
+var data = STOR.Get("newOrder", "none");
+
+if (data != "none")
+{
+    console.log(data);
+    _ORDER = regFn.parseJSON(data);
+
+    CrossDataFunction = fic.add(CrossDataFunction,"returnCustomer", taweb_client.GetData.CustomerIdByShopId(_ORDER.order.oshopid));
+    CrossDataFunction = fic.add(CrossDataFunction, "returnShop",_ORDER.order.oshopid);
+}
+else {
+    var cust = fic.getValue(CrossDataFunction, "returnCustomer");
+    var shop = fic.getValue(CrossDataFunction, "returnShop");
+    var date = $("#dtpOrderDate").val();
+    var off = $('#chkOff').val();
+
+    var id = uuid.v4();
+    var json = {details: [
+    ], order: {odate: date, onumber: "0", oshopid: shop, ocomment: "", ostoreid: "", ostart: "", oend: "",
+        ocreatedate: "", id: id, ocreatorid: "", oitemscount: "0", oisofficial: "0"}}
+
+    STOR.Set("newOrder", JSON.stringify(json));
+    _ORDER = json; //regFn.parseJSON(json);
+    Loging.Add("Create json. newOrder." + JSON.stringify(json), 5);
+}
+
+}
+
+function back()
+{
+if (fic.exist(CrossDataFunction, "back" + FORMNAME))
+{
+    FORM.RunForm(fic.getValue(CrossDataFunction, "back" + FORMNAME),
+            fic.add(CrossDataFunction, "return" + FORMNAME, ""), null);
+}
+else {
+    CloseForegroundForm();
+}
+}
+
+function ReturnData(data)
+{
+if (fic.exist(CrossDataFunction, "select" + FORMNAME))
+{
+    FORM.RunForm(fic.getValue(CrossDataFunction, "select" + FORMNAME),
+            fic.add(CrossDataFunction, "return" + FORMNAME, data), null);
+}
+else {
+    CloseForegroundForm();
+    CrossReturnFunction(data);
+}
+}
+
+function OnChangeCount()
+{
+try {
+    var price = parseFloat($("#price").html());
+    var count = parseInt($("#count").val());
+    $("#summ").html(price * count);
+}
+catch (err)
+{
+    console.log("Error calculate summ");
+}
+}
+
+function LoadStoreList()
+{
+
+//var person=prompt("Please enter your name","Harry Potter");
+//var cc = confirm("OK ?");
+//console.log(cc);
+
+var store_list = "";
+var defaultValue = "";
+
+var storel = taweb_client.GetTableLinq("tblstores");
+
+for (var i = 0; i < storel.items.length; i++)
+{
+    if (defaultValue == "")
+    {
+        defaultValue = storel.items[i].id;
+        store_list += "<option selected='selected' value='" + storel.items[i].id + "'> " + storel.items[i].sname + " </option>";
+    }
+    else {
+        store_list += "<option value='" + storel.items[i].id + "'> " + storel.items[i].sname + " </option>";
+    }
+}
+
+$("#cbx_store_list").html(store_list);
+
+if (defaultValue != "")
+{
+    ShowSelectedProducts();
+}
+}
+
+function showDiscount()
+{
+FORM.RunForm("Скидки",
+        "backDiscount:Новая накладная;returnCustomer:" + taweb_client.GetData.CustomerIdByShopId(_ORDER.order.oshopid) + ";",
+        function (data) { });
+}
+
+function showBuyHistory()
+{
+FORM.RunForm("История покупок",
+        "backBuyHistory:Новая накладная;returnCustomer:" + taweb_client.GetData.CustomerIdByShopId(_ORDER.order.oshopid) + ";",
+        function (data) { });
+}
+
+function ShowMenu(action)
+{
+action = typeof action !== 'undefined' ? action : 0;
+var div = document.getElementById("popup_menu_background");
+
+if (action == 0)
+{
+    div.style.display = 'none';
+}
+else {
+    div.style.display = 'block';
+
+    $("#txbComment").val(_ORDER.order.ocomment);
+    $('#chkOff').prop('checked', (_ORDER.order.oisofficial == "1" ? true : false)).checkboxradio('refresh');
+    //$('#chkKo').prop('checked', (_ORDER.info._ko == "1" ? true : false)).checkboxradio('refresh');
+}
+}
+
+function SaveSubMenuData()
+{
+_ORDER.order.ocomment = $("#txbComment").val();
+_ORDER.order.oisofficial = $("#chkOff").prop('checked') ? "1" : "0";
+//_ORDER.order._ko = $("#chkKo").prop('checked') ? "1" : "0";
+STOR.Set("newOrder", JSON.stringify(_ORDER));
+ShowMenu();
+}
+
+function ChangeProductValue(productId)
+{
+
+for (var i = 0; i < _ORDER.details.length; i++)
+{
+    if (_ORDER.details[i].odproductid == productId)
+    {
+        //$("#productName").html(DC.GetProductName(_ORDER.product[i]._product));
+        //$("#count").val(_ORDER.product[i]._count);
+        //$("#rest").val(_ORDER.product[i]._rest);
+        //$("#faci").val(_ORDER.product[i]._facing);
+        //$("#sprice").val(_ORDER.product[i]._sprice);
+
+        _ORDER.details[i].odproductcount = $("#count").val();
+        _ORDER.details[i].odrest = $("#rest").val();
+        _ORDER.details[i].odfacing = $("#faci").val();
+        _ORDER.details[i].odshopprice = $("#sprice").val();
+        STOR.Set("newOrder", JSON.stringify(_ORDER));
+        EditProduct();
+        ShowSelectedProducts();
+        return;
+    }
+}
+}
+
+function EditProduct(productId)
+{
+    productId = typeof productId !== 'undefined' ? productId : 0;
+var div = document.getElementById("popup_background");
+var storeid = $('#cbx_store_list option:selected').val();
+
+if (productId == 0)
+{
+    div.style.display = 'none';
+}
+else {
+
+    for (var i = 0; i < _ORDER.details.length; i++)
+    {
+        if (_ORDER.details[i].odproductid == productId)
+        {
+            $("#productName").html( _ORDER.details[i].product_name);
+            $("#count").val(_ORDER.details[i].odproductcount);
+            $("#rest").val(_ORDER.details[i].odrest);
+            $("#faci").val(_ORDER.details[i].odfacing);
+            $("#sprice").val(_ORDER.details[i].odshopprice);
+
+            //$("#price").html(DC.GetPriceForCustomer(productId, DC.GetCustomerFormShop(_ORDER.info._shop)));
+            $("#price").html( taweb_client.GetData.PriceForCustomer(productId,taweb_client.GetData.CustomerIdByShopId(_ORDER.order.oshopid),storeid) );
+            var aAddProduct = document.getElementById("btnAddProduct");
+            aAddProduct.onclick = function () { ChangeProductValue(productId) };
+
+            var aDelProduct = document.getElementById("btnDelProduct");
+            aDelProduct.onclick = function () { DeleteProduct(productId) };
+
+            div.style.display = 'block';
+            OnChangeCount();
+
+            return;
+        }
+    }
+
+}
+}
+
+/*#############################################################################*/
+//###################### LIST VIEW
+
+function ShowSelectedProducts()
+{
+//if (products == null)
+//    STOR.Get("products_rest", "", function (json)
+//    {
+//       products = regFn.parseJSON(json);
+//    });
+
+DGV2.dataGrid({
+    wrapperId: 'div_list_view_container_dgv2',
+    jsonData: _ORDER.details,
+    zebraRows: "true",
+    callBack: function (item) { EditProduct(item.odproductid); }, //функции callback передается ячйка по которой было вызвано событие
+    columnsName: {"product_name": "Продукты","odproductcount":"Кво","odrest":"Ост","odfacing":"Фей"},
+    cellWidth:{"product_name":"55","odproductcount":"15","odrest":"15","odfacing":"15"}
+});
+
+
+/*if (_ORDER.details.length <= 0)
+{
+    Loging.Add(FORMNAME + ". No product item to display.");
+    $('#product_list_new_order').html("<li data-theme=\"b\"> Продукты </li> ");
+    $("#upperform_main_div").trigger("create");
+    $('#product_list_new_order').listview('refresh');
+    return;
+}
+else {
+    //var productItem = regFn.parseJSON(data);
+    var product_list = " <li data-theme=\"b\"> Продукты </li> ";
+    for (var i = 0; i < _ORDER.product.length; i++)
+    {
+        var row = "<table border='0' cellspacing='1' cellpadding='0'><tr><td width='250'> " + DC.GetProductName(_ORDER.product[i]._product) + " </td><td width='30'> " + _ORDER.product[i]._count + " </td><td width='30'> " + _ORDER.product[i]._rest + " </td><td> * </td></tr></table> ";
+        product_list += "<li> <a onclick=\"EditProduct('" + _ORDER.product[i]._product + "')\" >" + row + " </a> </li>";
+    }
+
+    $('#product_list_new_order').html(product_list);
+    $("#upperform_main_div").trigger("create");
+    $('#product_list_new_order').listview('refresh');
+}*/
+
+}
+
+/*#############################################################################*/
+//###################### MENU FUNCTION
+
+function AddProduct()
+{
+//action = typeof action !== 'undefined' ? action : null;
+
+//FORM.RunForm("Справочник остатков","selectRest:Добавить товар;backRest:Новая накладная;\
+//selectAddProduct:Справочник остатков;backAddProduct:Справочник остатков;",function(data){ });
+/*
+ STOR.Get("newOrder", "none", function(data)
+ {
+ if (data == "none")
+ {
+ var cust = fic.getValue(CrossDataFunction, "returnCustomer");
+ var shop = fic.getValue(CrossDataFunction, "returnShop");
+ var date = $("#dtpOrderDate").val();
+ var off = $('#chkOff').val();
+ console.log(off);
+
+ var id = regFn.createUUID();
+ var json = "{ \"product\":[";
+ //json+="{\"_id\":\"0\",\"_count\":\"0\",\"_rest\":\"0\"}";
+ //json+="{\"_product\":\"746187\", \"_count\":\"2\", \"_price":"1400\", \"_rest\":\"-1\", \"_sprice\":\"\", \"_facing\":\"\"}";
+ json += "],";
+ json += " \"order\":{\"_id\":\"" + id + "\",\"_date\":\"" + date + "\",\"_number\":\"0\",\"_shop\":\"" + shop + "\",\
+ \"_off\":\"0\",\
+ \"_comment\":\"0\",\
+ \"_count\":\"0\",\
+ \"_store\":\"\",\
+ \"_start\":\"\",\
+ \"_end\":\"\",\
+ \"_summ\":\"\",\
+ \"sync\":\"0\"   } ";
+ json += "}";
+ STOR.Set("newOrder", json);
+ Loging.Add("Create json. newOrder." + json, 5);
+
+ }
+ });*/
+
+FORM.RunForm("Справочник остатков",
+        "backRest:Новая накладная;addToOrderRest:true;returnCustomer:" + fic.getValue(CrossDataFunction,
+                "returnCustomer") + ";", function (data) {
+        });
+}
+
+function RemoveOrder(id)
+{
+    var result = confirm("Вы хотите удалить накладную ?");
+    if (result)
+    {
+        /*REMOVE ORDER*/
+        STOR.Set("newOrder", "");
+        LoadOrderFromSTOR();
+    }
+    ShowSelectedProducts();
+}
+
+function DeleteProduct(productId)
+{
+    var result = confirm("Вы хотите удалить позицию ? ");
+    if (result)
+    {
+        var removePosition=-1;
+
+        for (var i = 0; i < _ORDER.details.length; i++)
+        {
+            if (_ORDER.details[i].odproductid == productId)
+            {
+                removePosition=i; break;
+            }
+        }
+
+        if (removePosition!=-1)
+        {
+            _ORDER.details.splice(removePosition,1);
+        }
+        else
+        {
+            alert("Product not found for remove !");
+        }
+        EditProduct();
+        ShowSelectedProducts();
+    }
+}
+
+
+function AddingMenu()
+{
+
+}
+
+
+</script>
+
+

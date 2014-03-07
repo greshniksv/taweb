@@ -1,0 +1,36 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html> 
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="dateTimePicker.css">
+        <script src="dateTimePicker.js"></script>
+        <script src="../../jquery-1.9.0.js"></script>
+    </head>
+
+    <body>
+
+        <div>TODO write content</div>
+        <input type="text" id="dtpTest">
+        <input type="text" id="dtpTest2">
+        <input type="text" id="dtpTest3">
+        <script>
+            dateTimePicker.initWorkPlace();
+            dateTimePicker.filldtp('dtpTest', function(id, date){alert(id);alert(date);});
+            dateTimePicker.filldtp('dtpTest2', function(id, datetime) {
+                console.log(id, datetime);
+            });
+            dateTimePicker.filldtp('dtpTest3', function(elem) {
+                console.log('3');
+            });
+
+
+
+        </script>
+    </body>
+
+</html>

@@ -1,0 +1,405 @@
+/*#############################################################################*/
+/*#############################################################################*/
+/*#############################################################################*/
+/*                        LIST_VIEW                                            */
+
+.list_view tr
+{
+    height: 50px;
+    font-size: 20px;
+}
+
+/*
+.list_view tr:nth-child(even) 
+{
+    background: #B2D1FF ; 
+}
+
+.list_view tr:nth-child(odd) 
+{
+    background: #CCE0FF; 
+}
+
+.list_view tr:hover
+{
+    background-color:gold;
+}
+*/
+
+.list_view
+{
+    width: 100%;
+    cursor: pointer;
+}
+
+div.list_view_container
+{
+    /*verflow: auto;*/
+    /*border: 1px solid #666;*/
+    background-color: #2A2A2A;
+    width: 95%;
+    margin:0 auto;
+}
+
+
+
+/*#############################################################################*/
+/*#############################################################################*/
+/*#############################################################################*/
+/*                        FORM_PANEL                                            */
+
+/*
+.table_verst
+{
+    height: 10px !important;
+    border: 1; 
+    padding: 0px; 
+    margin: 0px;
+}
+
+.ui-br
+{
+    margin-top: 2;
+    margin-bottom: 2;
+}
+*/
+
+
+
+#main_footer_panel
+{
+    z-index: 0;
+    height: 35px;
+}
+
+.form_footer_panel
+{
+    z-index: 2;
+    height: 35px;
+}
+
+.form_panel img
+{
+    width: 64px;
+}
+
+.list_view_container li
+{
+    font-size: 12px;
+}
+
+.ui-popup-hidden 
+{
+      display: none;
+}
+
+
+#product_list li a
+{
+    font-size: 13px;
+}
+
+
+/*#############################################################################*/
+/*#############################################################################*/
+/*#############################################################################*/
+/*                        FORM_HEADER                                          */
+
+#form_header
+{
+    
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    
+}
+
+#form_headerProdRest
+{
+    height: 85px;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    
+}
+
+#cbx_store_list_container
+{
+    position: fixed;
+    top: 40px;
+    left: 10px;
+    width: 47%;
+    z-index: 1005;
+}
+
+#cx_show_null_count
+{
+    position:fixed;
+    top:30px;
+    left: 55%;
+    /*right: 10px;*/
+    width: 44%;
+    z-index: 1005;
+}
+
+
+
+/*#############################################################################*/
+/*#############################################################################*/
+/*#############################################################################*/
+/*                        FORM_FOOTER                                          */
+
+#form_footer
+{
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+}
+
+.ui-input-search
+{
+    width: 80%;
+    /*padding-left: 100px;*/
+    z-index: 1005;
+}
+
+#product_filter_container
+{
+    /*height: 40px;*/
+    width: 80%;
+    position: fixed;
+    bottom: -1px;
+    left: 110px;
+    z-index: 1005;
+}
+
+
+
+/*#############################################################################*/
+/*#############################################################################*/
+/*#############################################################################*/
+/*                        FORM_ORDER                                          */
+
+
+#form_headerOrders h1
+{
+    text-align:left; margin-left:10px; font-size: 18px;
+}
+
+#form_headerOrders
+{
+    height: 90px;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    
+}
+
+#dtp_ordersDate
+{
+    position: fixed;
+    top: 40px;
+    left: 10px;
+    width: 47%;
+    z-index: 1005;
+}
+
+
+#dtpOrderStart
+{
+    size: 8px;
+    font-size: 16px;
+    width: 100px;
+    height: 30px;
+    text-align: center;
+}
+
+#dtpOrderEnd
+{
+    size: 8px;
+    font-size: 16px;
+    width: 100px;
+    height: 30px;
+    text-align: center;
+}
+
+#order_list li table
+{
+    font-size: 12px;
+    
+}
+
+#order_list table th
+{
+    font-size: 14px;
+    /*size: 16px;*/
+}
+
+
+
+/*#############################################################################*/
+/*#############################################################################*/
+/*#############################################################################*/
+/*                        PRODUCT REST                                          */
+
+
+#tableAddProduct
+{
+    background-color: #f0f0f0;
+    
+    border-color: #f2c43d;
+    border-style: double;
+    /*border-bottom-color: #f2c43d;
+    border-bottom-style: double;*/
+}
+
+
+#popup_background {
+ top:0;
+ left:0;
+ position:fixed;
+ background-color:#000;
+ opacity: 0.91;
+ width:100%;
+ height:100%;
+ z-index:1010;
+}
+
+.product_add_popup {
+  position:relative;
+  margin:10% auto auto auto;
+  width:300px;
+}
+
+#productName
+{
+    font-weight: bold;
+}
+
+
+/*#############################################################################*/
+/*#############################################################################*/
+/*#############################################################################*/
+/*                        NEW ORDER                                            */    
+
+#customerName
+{
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    color: #eee;
+    width: 350px; 
+}
+
+#orderDateContainer
+{
+    width: 150px;
+}
+
+#shopName
+{
+    text-align: center;
+    font-size: 12px;
+    color: #eee;
+}
+
+#popup_menu_background 
+{
+ top:0;
+ left:0;
+ position:fixed;
+ background-color:#000;
+ opacity: 0.91;
+ width:100%;
+ height:100%;
+ z-index:10000;
+}
+
+.popup_menu_list
+{
+  background-color: #f0f0f0;
+  position:relative;
+  margin:10% auto auto auto;
+  width:300px;
+}
+
+#product_list_new_order li a table td
+{
+    font-size: 13px;
+}
+
+#orderDateContainer
+{
+    width: 100px;
+    height: 30px;
+}
+
+#dtpOrderDate
+{
+    size: 8px;
+    font-size: 16px;
+    text-align: center;
+}
+
+
+
+/*#############################################################################*/
+/*#############################################################################*/
+/*#############################################################################*/
+/*                        INITIALIZATION FORM                                  */    
+
+#InitTdCaption
+{
+    text-align: center;
+    font-size: 16px;
+    color: #eee;
+}
+
+
+
+
+
+
+/*#############################################################################*/
+/*#############################################################################*/
+/*#############################################################################*/
+/*                        FORM DISCOUNT                                        */
+
+
+
+#form_headerDiscount
+{
+    height: 92px;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    
+}
+
+
+
+
+/*#############################################################################*/
+/*#############################################################################*/
+/*#############################################################################*/
+/*                        PASSWORD FORM                                          */
+
+
+#tablePasswordRequest
+{
+    background-color: #f0f0f0;
+    
+    border-color: #f2c43d;
+    border-style: double;
+    /*border-bottom-color: #f2c43d;
+    border-bottom-style: double;*/
+}
+
+
+#divPasswordRequest {
+  position:relative;
+  /*margin:5% auto auto auto;
+  margin:0 auto auto;*/
+  width:400px;
+  cursor:pointer;
+}

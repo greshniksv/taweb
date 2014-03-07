@@ -1,0 +1,113 @@
+Справочник магазинов""
+
+<div class='list_view_container' style="padding-top: 60px; padding-bottom: 60px;"> 
+    <ul id='shop_list' data-role="listview" data-theme="d"> </ul>
+    <div id='div_list_view_container_dgv2'></div>
+</div>
+
+<div id='form_header' data-role="header" class="ui-header ui-bar-a ui-header-fixed slidedown" >
+<h1 style="text-align:left; margin-left:10px; font-size: 16px"> Справочник магазинов  </h1>
+<a class="ui-btn-right" onclick="CloseForegroundForm()" data-icon="delete">Закрыть</a>
+</div>  
+
+
+<div id='form_footer' data-role="footer" class="ui-footer ui-bar-a ui-footer-fixed slideup form_footer_panel" >
+    <a class="ui-btn-up-a" data-role="button" data-icon="delete" onclick="back()" >Назад</a>
+</div>
+
+<script type="text/javascript">
+    
+var FORMNAME="Shop";       
+    
+$(document).ready(function()
+{
+  //   $(".list_view_container").css("height",$("#upperform_main_div").height()-100).
+  //          css("width",$("#upperform_main_div").width()-30);
+
+   LoadShopView();
+});
+
+function back()
+{
+    
+    if(fic.exist(CrossDataFunction,"back"+FORMNAME))
+    {
+        FORM.RunForm(fic.getValue(CrossDataFunction,"back"+FORMNAME),fic.add(CrossDataFunction,"return"+FORMNAME,""),null);
+    }
+    else
+    {
+        CloseForegroundForm();
+        //CrossReturnFunction(data);
+    }
+    
+     //FORM.RunMainForm("Справочник клиентов","select|shop",null);
+    //CloseForegroundForm();
+}
+
+
+function ReturnData(data)
+{
+    
+    if(fic.exist(CrossDataFunction,"select"+FORMNAME))
+    {
+        FORM.RunForm(fic.getValue(CrossDataFunction,"select"+FORMNAME),fic.add(CrossDataFunction,"return"+FORMNAME,data),null);
+    }
+    else
+    {
+        CloseForegroundForm();
+        CrossReturnFunction(data);
+    }
+    
+    /*
+    if(typeof CrossDataFunction != "undefined")
+    {
+        if(CrossDataFunction.length>0)
+        {
+            CloseForegroundForm();
+            CrossReturnFunction(data);
+        }
+    }
+    CloseForegroundForm();
+    */
+}
+
+function LoadShopView()
+{
+    var shop_list=" <li data-theme=\"b\">Наименование магазинов</li> ";
+    var customerId=fic.getValue(CrossDataFunction,"returnCustomer");
+
+    if(customerId==null )
+    {
+        alert("Error open form. Not set 'returnCustomer';");
+        Loging.Add("Error open form. Not set 'returnCustomer';");
+        CloseForegroundForm();
+    }
+
+    var shopl;
+
+    try {
+        shopl = taweb_client.GetTableLinq("tblshops").Where(function(i){  return i.scustomerid == customerId;  });
+    }
+    catch (e)
+    {
+        alert("Данных не обнаружено !");
+        CloseForegroundForm();
+        return;
+    }
+
+
+    DGV2.dataGrid({
+        wrapperId: 'div_list_view_container_dgv2',
+        jsonData: shopl.items,
+        zebraRows: "true",
+        callBack: function (item) { ReturnData(item.id); }, //функции callback передается ячйка по которой было вызвано событие
+        columnsName: {"sname": "Магазин","saddress":"Адрес"}
+    });
+
+}
+
+
+
+</script>
+
+

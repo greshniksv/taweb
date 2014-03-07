@@ -1,0 +1,229 @@
+<html>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+    <!--<meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"> 
+    <!--<meta name="viewport" content="width=device-width" />-->
+
+
+    <hr>
+    <table id='status_table' border='0' width='100%' style="background-color: crimson" > <tr><td style="text-align: right">  STATUS: </td><td id='status' style="text-align: left" >  </td></tr>  </table>
+    <hr>
+
+
+    <table border='1'>
+        <tr><th> <b> CYBORG </b> </th></tr>
+        <tr><td valign='top'>
+                <div id='cyborg'> </div>
+                <table border='1'>
+                    <tr><th>DATABASE</th></tr>
+                    <tr><td> <div id='database' style="width: 400px; height: 100px; overflow: auto;  font-size: 14px"> </div></td></tr>
+                </table>
+            </td><td>
+
+                <table border='1'>
+                    <tr><th>Main</th></tr>
+                    <tr><td> <div id='log_main' style="width: 600px; height: 300px; overflow: auto; font-size: 14px"> </div> </td></tr>
+                </table>
+                <div id='cyborg_status' style="width: 300px; height: 100px; overflow: auto;  font-size: 14px"> </div><br>
+            </td>
+        <td valign='top'>
+              <div id='locker' style="width: 600px; height: 500px; overflow: auto;  font-size: 14px"> </div><br>  
+        </td></tr> 
+    </table>
+
+    <table width='500' border='1'>
+        <tr><td> <select id='combo_command' onchange="combo_to_textbox()"> </select> </td><td> <input id='txb_command' style="width: 400px" type='text' /> </td><td> <input type="button" style="width: 150px" onclick="executeCommand()" value='Send' />  </td></tr>
+        <tr><td colspan='9' id='command_info'> </td></tr> 
+        <tr><td colspan='9'> <textarea id='txa_command_respond' cols='88' rows='6'>  </textarea> </td></tr>
+    </table>
+    
+    
+    <script type="text/javascript">
+        
+        getCommandList();
+        var cyborg_log_list = "<table border='1'>";
+        GetJSON("/[web_key]/cyborg_list", function(data) {
+            for (var i = 0; i < data.length; i++)
+            {
+                cyborg_log_list += "<tr><th>" + data[i].value + "</th></tr>";
+                cyborg_log_list += "<tr><td> <div style=\"width: 400px; height: 100px; overflow: auto;  font-size: 14px\" id='log_" + data[i].value + "'> </div> </td></tr>";
+                //getLog(data[i].value, "log_"+data[i].value);
+                window.setInterval("getLog('" + data[i].value + "','" + "log_" + data[i].value + "')", 1000);
+            }
+            cyborg_log_list += "</table>"
+            //getLog("main", "log_main");
+            $("#cyborg").html(cyborg_log_list);
+
+        });
+        //getLocker();
+        window.setInterval("getLocker()", 1000);
+        window.setInterval("getCyborgStatus()", 1000);
+        window.setInterval("getLog('main','log_main')", 1000);
+        window.setInterval("getLog('database','database')", 1000);
+        
+        function combo_to_textbox()
+        {
+           $("#txb_command").val($("#combo_command option:selected").text());
+           $("#command_info").html("INFO:"+$("#combo_command").val()); 
+        }
+        
+        function executeCommand()
+        {
+            var cmd = $("#txb_command").val();
+            if(cmd.trim().length < 1) { alert("No command !"); return; }
+            
+            GetJSON("/[web_key]/command/"+cmd.trim(), function(data) {
+                d = JSON.stringify(data);
+                $("#txa_command_respond").html(d);
+            });
+        }
+
+        function getCommandList()
+        {
+            GetJSON("/[web_key]/command/help", function(data) {
+                var list = ""
+                try
+                {
+                    for (var i = data.length - 1; i >= 0; i--)
+                    {
+                        list += "<option "+(list.length < 5?"selected":"")+" value='"+data[i].info+"'> "+data[i].key+" </option> "
+                    }
+                }
+                catch (err)
+                {
+                    //alert("ERROR. LOCKER. " + err.message);
+                    d = JSON.stringify(data);
+                    console.log("ERROR. GET LIST. " + err.message+"\nData:"+d)
+                    sleep(1);
+                    return;
+                }
+
+                $("#combo_command").html(list);
+
+            });
+            
+        }
+        
+
+        function getLocker()
+        {
+            //console.log("locker_list ")
+            GetJSON("/[web_key]/locker_list", function(data) {
+                var dd = "<table width='100%' style='font-size: 14px' border='1'><tr><th colspan='8'> LOCKERS </th></tr> <tr><th width='50'>ID</th><th>TABLE</th><th>KEY</th><th>TIME</th></tr>";
+
+                try
+                {
+                    for (var i = data.length - 1; i >= 0; i--)
+                    {
+                        dd += "<tr><td>" + data[i].id + "</td><td>" + data[i].table + "</td><td>" + data[i].key + "</td><td>" + data[i].time + "</td></tr>"
+                    }
+
+                }
+                catch (err)
+                {
+                    //alert("ERROR. LOCKER. " + err.message);
+                    d = JSON.stringify(data);
+                    console.log("ERROR. LOCKER. " + err.message+"\nData:"+d)
+                    sleep(1);
+                    return;
+                }
+
+                dd += "</table>"
+                $("#locker").html(dd);
+
+            });
+
+        }
+        
+         function getCyborgStatus()
+        {
+            //console.log("locker_list ")
+            GetJSON("/[web_key]/cyborg_list", function(data) {
+                var dd = "<table width='100%' style='font-size: 14px' border='1'><tr><th colspan='8'> CYBORG STATUS </th></tr> <tr><th>NAME</th><th>Status</th></tr>";
+
+                try
+                {
+                    for (var i = data.length - 1; i >= 0; i--)
+                    {
+                        dd += "<tr><td>" + data[i].value + "</td><td>" + data[i].status + "</td></tr>"
+                    }
+
+                }
+                catch (err)
+                {
+                    //alert("ERROR. LOCKER. " + err.message);
+                    d = JSON.stringify(data);
+                    console.log("ERROR. LOCKER. " + err.message+"\nData:"+d)
+                    sleep(1);
+                    return;
+                }
+
+                dd += "</table>"
+                $("#cyborg_status").html(dd);
+
+            });
+
+        }
+        
+
+        function getLog(threadName, elementId)
+        {
+            GetJSON("/[web_key]/syslog/" + threadName, function(data) {
+                var dd = "";
+
+                try
+                {
+                    for (var i = data.length - 1; i >= 0; i--)
+                    {
+                        try
+                        {
+                            dd += data[i].item + "</br>\n"
+                        }
+                        catch (err)
+                        {
+
+                        }
+                    }
+
+
+                }
+                catch (err)
+                {
+                    d = JSON.stringify(data);
+                    console.log("ERROR. ThName:" + threadName + ". Element:" + elementId + "  " + err.message+"\ndata:"+d);
+                    return;
+                }
+
+                $("#" + elementId).html(dd);
+                //console.log("getLog: "+threadName)
+                //window.setInterval("getLog('"+threadName+"','"+elementId+"')",10000);
+            });
+
+        }
+
+
+        function GetJSON(_url, returnF)
+        {
+            $.ajax({
+                url: _url,
+                dataType: "json",
+                contentType: "text/json; charset=utf-8",
+                success: function(data) {
+                    //alert(data);
+                    $("#status").html("ONLINE");
+                    $("#status_table").css("background-color", "chartreuse");
+                    returnF(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    $("#status").html("OFFLINE");
+                    $("#status_table").css("background-color", "crimson");
+
+                    returnF(null);
+                    //alert("Error ajax: " + errorThrown + " text:" + textStatus);
+                }});
+        }
+
+    </script>
+
+</html>
