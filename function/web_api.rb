@@ -1,3 +1,7 @@
+#
+# АПИ функции для управления сервером
+#
+#
 def check_key key
   
     if key==$config.API_KEY

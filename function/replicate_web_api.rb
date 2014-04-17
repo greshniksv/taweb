@@ -1,3 +1,8 @@
+#
+# АПИ функции для синхронизации репликации
+#
+#
+
 class Replweb_Manager
 
     def self.exec cmd, user

@@ -1,5 +1,6 @@
 class Snapshot
 
+    # Извоель активных клиентов
     def self.get_active_clients pg=nil
         client_list = Array.new
         opened_connection=false
@@ -14,7 +15,7 @@ class Snapshot
         client_list
     end
 
-
+    # Создание снапшота для клиента
     def self.create client_id
         table_list = Hash.new
         uuid = UUID.new
@@ -101,6 +102,7 @@ class Snapshot
         return "[{\"status\":\"ok\"}]"
     end
 
+    # Получить МД5 таблицы снапшота клиента
     def self.get_md5_table user_id, table, pg=nil
         close_connection = false
 
@@ -118,7 +120,7 @@ class Snapshot
         Digest::MD5.hexdigest data
     end
 
-
+    # Получить разницы между основной таблицей и репликационной для клиента, вернет JSON
     def self.gen_table_difference_json user_id, table_name, pg
         #pg = Pg_connection.new
         pg2 = Pg_connection.new
@@ -257,7 +259,11 @@ class Snapshot
 
     end
 
-
+    # Получить разницы между основными таблицами и репликационными для клиента,
+    # Рузультат запишет в:
+    # "insert into snapshot.client_query_action (client_id,action,query) values ('#{client_id}','tables_change','#{Base64.encode64(change_json.string)}') "
+    #
+    #
     def self.gen_all_table_difference client_id
         $syslog.add "Get table difference, user: #{client_id}"
         pg = Pg_connection.new
@@ -296,6 +302,7 @@ class Snapshot
         pg.close
     end
 
+    # Применение изменений к снапшотам
     def self.commit_json json, client_id
 
         #puts "WRITE TO SNAPSHOT SERVER DATA: \n #{json}"
@@ -368,6 +375,7 @@ class Snapshot
         pg.close
     end
 
+    # Получить список запросов для изменения снапшота
     def self.get_commit_client_changes client_id
         pg = Pg_connection.new
         rez = pg.exec " SELECT query FROM snapshot.client_query_action where action = 'tables_change' and client_id='#{client_id}' "
@@ -380,7 +388,7 @@ class Snapshot
         nil
     end
 
-
+    # Получить список запросов для изменения снапшота и применить
     def self.commit_client_changes client_id
         #5e9f7140-00d1-0131-1c38-485b39432295
         pg = Pg_connection.new
@@ -391,7 +399,7 @@ class Snapshot
         pg.close
     end
 
-
+    # Получить МД5 для шнапотной таблицы пользователя.
     def self.get_md5_snapshot_table table_name, user
         return_data = nil
         pg = Pg_connection.new
@@ -411,7 +419,7 @@ class Snapshot
 
         attr_reader :sync_session_id, :create_time
 
-
+        # Создать репликационную сесию
         def create user, data
 
             @create_time = Time.now
@@ -433,6 +441,7 @@ class Snapshot
             @sync_session_id
         end
 
+        # Применение полученных данных от клиента, и сверка МД5
         def commit_sync_data
 
             Locker.lock @sync_session_id, 'sync session'
@@ -493,6 +502,7 @@ class Snapshot
             Locker.unlock @sync_session_id, 'sync session'
         end
 
+        # Применение изменений в базу Основную, Локальную и Снапшоты
         def commit_json json # table:data
             # find auto increment field and delete them from json.
 
@@ -654,6 +664,7 @@ class Snapshot
 
         end
 
+        # Проверка МД5 таблиц
         def verify_md5(data)
             ret=true
 
@@ -688,6 +699,7 @@ class Snapshot
             Snapshot.get_commit_client_changes @commit_user
         end
 
+        # Поиск ошибок в репликации
         def find_errors(data)
             #@commit_data
 
@@ -739,7 +751,7 @@ class Snapshot
 
         end
 
-
+        # Откат изменений рпликации
         def rollback
             $syslog.add 'Rollback data !'
 

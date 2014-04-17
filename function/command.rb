@@ -3,7 +3,7 @@
 #####################################
 # INFO:
 # 
-# 
+# Обработчий команд
 # 
 #
 
@@ -25,7 +25,7 @@ class Command
     
 end
 
-
+# Список доступных команд
 class Cmd_Help
     
     attr_reader :key,:info
@@ -51,7 +51,7 @@ class Cmd_Help
 end
 $command_list[$command_list.count] = Cmd_Help.new
 
-
+# Инициализация создания снапшота для клиента
 class Cmd_Snapshot_Creator
     
     attr_reader :key,:info
@@ -144,7 +144,7 @@ end
 
 $command_list[$command_list.count] = Cmd_test.new
 
-
+# Список доступных клиентов
 class Cmd_get_client_list
 
     attr_reader :key,:info
@@ -168,7 +168,8 @@ end
 $command_list[$command_list.count] = Cmd_get_client_list.new
 
 
-
+# Извлечь репликационные логи по клиенту
+#
 class Cmd_get_sync_log
 
     attr_reader :key,:info

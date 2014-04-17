@@ -4,6 +4,10 @@
 # This class only create table and field.
 # If field exist and type or size not match will be ignore.
 #
+# Rus:
+# Создание всех таблиц указанных в system.repl_table
+# а также набор статических вспомогательных
+#
 
 
 class Cmd_Clone_table_creator
