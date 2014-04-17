@@ -12,6 +12,8 @@ var taweb_client =
     Info: null,
     Client: "",
     ReturnF: null,
+
+    // Инициализация классовых переменных
     Initialize: function (host, api_key, progress, info, returnF)
     {
         this.Host = host;
@@ -28,6 +30,8 @@ var taweb_client =
             }
         }
     },
+
+    // Загрузка клиентов и отображение их выбора
     StartClientInitialize: function (returnF)
     {
         taweb_client.ReturnF = returnF;
@@ -68,6 +72,8 @@ var taweb_client =
              $('#upperform_main_head').html("<b> Выбор пользователя <b>");
          });
     },
+
+    // Выбор клиента
     ChoiceClient: function ()
     {
 
@@ -90,6 +96,8 @@ var taweb_client =
         taweb_client.ClientInit(STOR.Get("client_id", "none"), taweb_client.ReturnF);
 
     },
+
+    // Загрузка указанной таблицы
     DownloadTable: function (table_list)
     {
         if (table_list == null)
@@ -118,6 +126,7 @@ var taweb_client =
              taweb_client.DownloadTable(table_list);
          });
     },
+    // очистка локал стореджа и запрос снапшота и загрузка таблиц
     ClientInit: function (client, returnF)
     {
         taweb_client.ReinitData();
@@ -162,6 +171,12 @@ var taweb_client =
          });
 
     },
+
+    // Генерация данных для реплицирования
+    // - Начальные МД5
+    // - Конечные МД5 (Начальные + новые данные)
+    // - Новые данные
+    // - Список ИД таблиц для дебага
     GenSyncData: function ()
     {
         var stor_list = STOR.List();
@@ -239,6 +254,7 @@ var taweb_client =
         //console.log(json_str);
         return json_str;
     },
+    // Отправка сислога
     SendLog: function (data, returnF)
     {
         if (typeof data == "undefined")
@@ -270,6 +286,7 @@ var taweb_client =
             }
         });
     },
+    // Отправка данных для репоикации
     send_sync_data: function (returnF)
     {
 
@@ -298,6 +315,7 @@ var taweb_client =
             }
         });
     },
+    // Загрузка ответа репликации от сервера
     try_get_sync_data: function (sync_id)
     {
         taweb_client.client = STOR.Get("client_id", "none");
@@ -342,7 +360,7 @@ var taweb_client =
                                   }
                                   else if (msg == "ok")
                                   {
-                                      alert("AHUET !!!");
+                                      alert("Horosho !!!");
                                       taweb_client.ReturnF();
                                   }
                                   else {
@@ -378,6 +396,7 @@ var taweb_client =
 
          });
     },
+    // Применение новых данным к текущим таблицам
     commit_sync_data: function (data)
     {
         taweb_client.ReinitData();
@@ -428,7 +447,7 @@ var taweb_client =
 
         return true
     },
-
+    // Обнуление массивов
     ReinitData: function()
     {
         /*Reinit data*/
@@ -441,6 +460,7 @@ var taweb_client =
     // #################################################################################################################
     //                                              DATA
 
+    // Запрос таблицы в JSON
     GetTableLinq: function (table_name)
     {
         var json;
@@ -455,6 +475,8 @@ var taweb_client =
         }
         return JSLINQ(json)
     },
+
+    // Удаление пометок о том что ров новый.
     CommitIsNew: function ()
     {
         taweb_client.Client = STOR.Get("client_id", "none");
@@ -487,6 +509,7 @@ var taweb_client =
         }
 
     },
+
     RemoveRow: function (table_name, data)
     {
         try {
@@ -556,8 +579,10 @@ var taweb_client =
         CustomerShopList: null,
         ProductRestList:null
     },
+    // Функции для форм
     GetFormData: {
 
+        // Выбор накладных (Шапка)
         Orders: function (date_from, date_to, store_id)
         {
             order_list = taweb_client.GetTableLinq('tblorders').
@@ -589,6 +614,8 @@ var taweb_client =
             //console.log(JSON.stringify(order_list));
             return order_list;
         },
+
+        // Выбор накладных (Детали)
         OrderDetails: function (order_id)
         {
 
@@ -609,7 +636,7 @@ var taweb_client =
 
             return item_list;
         },
-
+        // Выбор продуктов с остатками
         ProductRest: function()
         {
             if(taweb_client.CompiledData.ProductRestList==null)
@@ -874,10 +901,6 @@ var taweb_client =
         //console.log("DATA "+table_name+":["+id_list+"]");
         return calcMD5(id_list);
     }
-
-
-
-
 
 
 }
